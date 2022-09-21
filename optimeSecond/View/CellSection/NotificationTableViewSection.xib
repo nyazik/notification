@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="notificationCell" rowHeight="459" id="KGk-i7-Jjw" customClass="NotificationTableViewSection" customModule="optimeSecond" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="829" height="459"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="829" height="459"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="circle.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="sAv-rV-uhP">
+                        <rect key="frame" x="5" y="225" width="10" height="9"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="10" id="dnS-mf-kig"/>
+                            <constraint firstAttribute="height" constant="10" id="qfc-lg-GiX"/>
+                        </constraints>
+                    </imageView>
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="tree" translatesAutoresizingMaskIntoConstraints="NO" id="pqp-yp-otD">
+                        <rect key="frame" x="25" y="204.5" width="50" height="50"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="50" id="bwR-iq-NFb"/>
+                            <constraint firstAttribute="width" constant="50" id="fh5-3j-Vwi"/>
+                        </constraints>
+                    </imageView>
+                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="rpB-Fi-EFx">
+                        <rect key="frame" x="85" y="209" width="41.5" height="41"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Hqr-Fp-27K">
+                                <rect key="frame" x="0.0" y="0.0" width="41.5" height="20.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8nt-KS-tjL">
+                                <rect key="frame" x="0.0" y="20.5" width="41.5" height="20.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                    </stackView>
+                </subviews>
+                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                <constraints>
+                    <constraint firstItem="pqp-yp-otD" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="UPi-Z9-fbK"/>
+                    <constraint firstItem="rpB-Fi-EFx" firstAttribute="centerY" secondItem="pqp-yp-otD" secondAttribute="centerY" id="Zrz-zh-mYQ"/>
+                    <constraint firstItem="pqp-yp-otD" firstAttribute="leading" secondItem="sAv-rV-uhP" secondAttribute="trailing" constant="10" id="hT2-3f-jFq"/>
+                    <constraint firstItem="sAv-rV-uhP" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="5" id="quc-fq-tYs"/>
+                    <constraint firstItem="rpB-Fi-EFx" firstAttribute="leading" secondItem="pqp-yp-otD" secondAttribute="trailing" constant="10" id="u3U-B5-yZq"/>
+                    <constraint firstItem="sAv-rV-uhP" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="yfW-me-mYk"/>
+                </constraints>
+            </tableViewCellContentView>
+            <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
+            <connections>
+                <outlet property="messageType" destination="8nt-KS-tjL" id="MLU-pm-0GM"/>
+                <outlet property="nameLabel" destination="Hqr-Fp-27K" id="KS2-rQ-d1Z"/>
+                <outlet property="readView" destination="sAv-rV-uhP" id="bk1-7V-JAS"/>
+                <outlet property="userImageView" destination="pqp-yp-otD" id="s6d-nU-xeH"/>
+            </connections>
+            <point key="canvasLocation" x="422.46376811594206" y="150.33482142857142"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="circle.fill" catalog="system" width="128" height="121"/>
+        <image name="tree" width="771" height="480"/>
+    </resources>
+</document>
