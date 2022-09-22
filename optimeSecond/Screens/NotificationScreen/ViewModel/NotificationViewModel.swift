@@ -37,7 +37,7 @@ extension NotificationViewModel {
     }
     
     func startTimer(completeon: () -> ()) {
-        timer = Timer.scheduledTimer(timeInterval: 3.0, target: self, selector: #selector(fireTimer), userInfo: nil, repeats: true)
+        timer = Timer.scheduledTimer(timeInterval: 30.0, target: self, selector: #selector(fireTimer), userInfo: nil, repeats: true)
         completeon()
     }
     @objc func fireTimer() {
