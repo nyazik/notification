@@ -7,10 +7,7 @@
 
 import UIKit
 
-enum Sections: Int, CaseIterable {
-    case allOrMessageRequestSegment, today, yesterday
-    
-}
+
 
 class NotificationsViewController: UIViewController {
     var vm  = NotificationViewModel()
@@ -46,40 +43,20 @@ extension NotificationsViewController : UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
       if editingStyle == .delete {
-          if indexPath.section == Sections.today.rawValue {
-              if ((vm.notificationModel?.filter({ $0.day == "td" }).first?.model.remove(at: indexPath.row)) != nil) {
-                  self.tableView.deleteRows(at: [indexPath], with: .automatic)
-                  self.tableView.reloadData()
-              }
-          } else if indexPath.section == Sections.yesterday.rawValue {
-              if ((vm.notificationModel?.filter({ $0.day == "yesterday" }).first?.model.remove(at: indexPath.row)) != nil) {
-                  self.tableView.deleteRows(at: [indexPath], with: .automatic)
-                  self.tableView.reloadData()
-              }
+          
+          vm.commitEditingStyle(indexPathSection: indexPath.section, indexPath: indexPath) {
+              self.tableView.deleteRows(at: [indexPath], with: .automatic)
+              self.tableView.reloadData()
           }
-        
+
       }
     }
     
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         print(indexPath)
-        if indexPath.section == Sections.today.rawValue {
-            if vm.notificationModel?.filter({ $0.day == "td" }).first?.model[indexPath.row].read  == true {
-                vm.notificationModel?.filter({ $0.day == "td" }).first?.model[indexPath.row].read = false
-                self.tableView.reloadData()
-            } else {
-                vm.notificationModel?.filter({ $0.day == "td" }).first?.model[indexPath.row].read = true
-                self.tableView.reloadData()
-            }
-        } else if indexPath.section == Sections.yesterday.rawValue {
-            if vm.notificationModel?.filter({ $0.day == "yesterday" }).first?.model[indexPath.row].read  == true {
-                vm.notificationModel?.filter({ $0.day == "yesterday" }).first?.model[indexPath.row].read = false
-                self.tableView.reloadData()
-            } else {
-                vm.notificationModel?.filter({ $0.day == "yesterday" }).first?.model[indexPath.row].read = true
-                self.tableView.reloadData()
-            }
+        vm.didSelectRowAt(indexPathSection: indexPath.section, indexPath: indexPath) {
+            self.tableView.reloadData()
         }
     }
 }
@@ -89,37 +66,11 @@ extension NotificationsViewController : UITableViewDataSource {
 
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        
-        switch section {
-        case Sections.allOrMessageRequestSegment.rawValue :
-            return 1
-        case Sections.today.rawValue :
-            let today = vm.notificationModel?.filter { $0.day == "td" }
-            return today?.first?.model.count ?? 0
-        case Sections.yesterday.rawValue:
-            let yesterday = vm.notificationModel?.filter { $0.day == "yesterday" }
-            return yesterday?.first?.model.count ?? 0
-        default:
-            return 0
-        }
+        return vm.numberOfRawInSection(section: section)
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        switch section {
-        case Sections.allOrMessageRequestSegment.rawValue :
-            return ""
-        case Sections.today.rawValue :
-            if vm.notificationModel?.filter({ $0.day == "td" }).first?.model.count ?? 0 > 0 {
-                return "Today"
-            } else {
-                return ""
-            }
-            
-        case Sections.yesterday.rawValue:
-            return "Yesterday"
-        default :
-            return "no"
-        }
+        return vm.titleForHeaderInSection(section: section)
     
         
     }
@@ -131,9 +82,9 @@ extension NotificationsViewController : UITableViewDataSource {
                 fatalError("cell not found")
             }
             cell.selectionStyle = .none
-            let today = vm.notificationModel?.filter { $0.day == "td" }
+            let today = vm.cellForRowAt(indexPath: indexPath)
             cell.nameLabel.text = "today"
-            cell.nameLabel.text = today?.first?.model[indexPath.row].name
+            cell.nameLabel.text =  today?.first?.model[indexPath.row].name
             cell.messageType.text = today?.first?.model[indexPath.row].messageType
             cell.userImageView.image = today?.first?.model[indexPath.row].img
             cell.readView.isHidden = today?.first?.model[indexPath.row].read ?? false
@@ -144,7 +95,7 @@ extension NotificationsViewController : UITableViewDataSource {
                 fatalError("cell not found")
             }
             cell.selectionStyle = .none
-            let yesterday = vm.notificationModel?.filter { $0.day == "yesterday" }
+            let yesterday = vm.cellForRowAt(indexPath: indexPath)
             cell.nameLabel.text = yesterday?.first?.model[indexPath.row].name
             cell.userImageView.image = yesterday?.first?.model[indexPath.row].img
             cell.messageType.text = yesterday?.first?.model[indexPath.row].messageType
@@ -209,10 +160,7 @@ extension NotificationsViewController {
             }
         }
         
-        
         self.tableView.reloadData()
-        
-        
         
     }
     
@@ -228,7 +176,6 @@ extension NotificationsViewController {
             } else {
                 timerButton.title = "Start"
                 vm.stopTimer()
-                
             }
         }
     }

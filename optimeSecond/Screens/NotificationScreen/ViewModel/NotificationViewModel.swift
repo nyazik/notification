@@ -7,6 +7,12 @@
 
 import UIKit
 
+enum Sections: Int, CaseIterable {
+    case allOrMessageRequestSegment, today, yesterday
+    
+}
+
+
 class NotificationViewModel {
     var models2: [Model]?
     var models: [Model]?
@@ -37,9 +43,10 @@ extension NotificationViewModel {
     }
     
     func startTimer(completeon: () -> ()) {
-        timer = Timer.scheduledTimer(timeInterval: 30.0, target: self, selector: #selector(fireTimer), userInfo: nil, repeats: true)
+        timer = Timer.scheduledTimer(timeInterval: 3.0, target: self, selector: #selector(fireTimer), userInfo: nil, repeats: true)
         completeon()
     }
+    
     @objc func fireTimer() {
         print("Timer fired!")
         runLogic()
@@ -81,8 +88,88 @@ extension NotificationViewModel {
             self.models2?.append(model5)
             notificationModel?[randomElenet] = NotificationModel(day: "yesterday", model: models2 ?? [])
         }
-        
+    }
+
+    
+}
+
+//MARK: - uitableView
+extension NotificationViewModel {
+    func numberOfRawInSection(section: Int) -> Int {
+        switch section {
+        case Sections.allOrMessageRequestSegment.rawValue :
+            return 1
+        case Sections.today.rawValue :
+            let today = notificationModel?.filter { $0.day == "td" }
+            return today?.first?.model.count ?? 0
+        case Sections.yesterday.rawValue:
+            let yesterday = notificationModel?.filter { $0.day == "yesterday" }
+            return yesterday?.first?.model.count ?? 0
+        default:
+            return 0
+        }
     }
     
+    func titleForHeaderInSection(section: Int) -> String {
+        switch section {
+        case Sections.allOrMessageRequestSegment.rawValue :
+            return ""
+        case Sections.today.rawValue :
+            if notificationModel?.filter({ $0.day == "td" }).first?.model.count ?? 0 > 0 {
+                return "Today"
+            } else {
+                return ""
+            }
+            
+        case Sections.yesterday.rawValue:
+            return "Yesterday"
+        default :
+            return "no"
+        }
+    }
+    
+    
+    func commitEditingStyle (indexPathSection : Int, indexPath : IndexPath, completeon : () -> ()) {
+        if indexPathSection == Sections.today.rawValue {
+            if ((notificationModel?.filter({ $0.day == "td" }).first?.model.remove(at: indexPath.row)) != nil) {
+                completeon()
+            }
+        } else if indexPathSection == Sections.yesterday.rawValue {
+            if ((notificationModel?.filter({ $0.day == "yesterday" }).first?.model.remove(at: indexPath.row)) != nil) {
+                completeon()
+            }
+        }
+    }
+    
+    func didSelectRowAt(indexPathSection : Int, indexPath: IndexPath, completeon : () -> ()) {
+        if indexPathSection == Sections.today.rawValue {
+            if notificationModel?.filter({ $0.day == "td" }).first?.model[indexPath.row].read  == true {
+                notificationModel?.filter({ $0.day == "td" }).first?.model[indexPath.row].read = false
+                completeon()
+            } else {
+                notificationModel?.filter({ $0.day == "td" }).first?.model[indexPath.row].read = true
+                completeon()
+            }
+        } else if indexPathSection == Sections.yesterday.rawValue {
+            if notificationModel?.filter({ $0.day == "yesterday" }).first?.model[indexPath.row].read  == true {
+                notificationModel?.filter({ $0.day == "yesterday" }).first?.model[indexPath.row].read = false
+                completeon()
+            } else {
+                notificationModel?.filter({ $0.day == "yesterday" }).first?.model[indexPath.row].read = true
+                completeon()
+            }
+        }
+    }
+    
+
+    func cellForRowAt(indexPath: IndexPath) -> [NotificationModel]? {
+        var model: [NotificationModel]?
+        if indexPath.section == Sections.today.rawValue {
+            model = notificationModel?.filter { $0.day == "td" }
+        } else if indexPath.section == Sections.yesterday.rawValue {
+            model = notificationModel?.filter { $0.day == "yesterday" }
+        }
+        return model
+    }
     
 }
