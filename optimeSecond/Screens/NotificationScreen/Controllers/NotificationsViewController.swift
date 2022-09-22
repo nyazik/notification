@@ -13,11 +13,12 @@ enum Sections: Int, CaseIterable {
 }
 
 class NotificationsViewController: UIViewController {
-
+    var vm  = NotificationViewModel()
     @IBOutlet weak var readAllButton: UIBarButtonItem!
     @IBOutlet weak var tableView: UITableView!
-    var notificationModel : [NotificationModel]?
+    @IBOutlet weak var timerButton: UIBarButtonItem!
     
+   
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.dataSource = self
@@ -27,48 +28,56 @@ class NotificationsViewController: UIViewController {
         //register cells
         tableView.register(UINib(nibName: "NotificationTableViewSection", bundle: nil), forCellReuseIdentifier: "notificationCell")
         tableView.register(UINib(nibName: "SegmentCell", bundle: nil), forCellReuseIdentifier: "segmentCell")
-        
-        appendElemens()
+        vm.refreshTable = { value in
+            self.tableView.reloadData()
+        }
+        vm.startTimer {
+            timerButton.title = "Stop"
+        }
+        vm.appendElemens()
     }
+  
+    
 }
 
-//MARK: - appendElemetsToArray
-extension NotificationsViewController {
-    func appendElemens() {
-        let model1 = Model(img: UIImage(named: "a")! , name: "a", messageType : "message request", read: false)
-        let model2 = Model(img: UIImage(named: "b")!, name: "b", messageType : "another", read: true)
-        let model3 = Model(img: UIImage(named: "c")!, name: "c", messageType : "another", read: false)
-        let model4 = Model(img: UIImage(named: "d")!, name: "d", messageType : "message request", read: true)
-        
-        let model5 = Model(img: UIImage(named: "a")! , name: "a", messageType : "another", read: false)
-        let model6 = Model(img: UIImage(named: "b")!, name: "b", messageType : "message request", read: true)
-        let model7 = Model(img: UIImage(named: "c")!, name: "c", messageType : "message request", read: false)
-        let model8 = Model(img: UIImage(named: "d")!, name: "d", messageType : "another", read: true)
-        
-        let models = [model1, model2, model3, model4]
-        let models2 = [model5, model6, model7, model8]
-        notificationModel = [NotificationModel(day: "td", model: models),NotificationModel(day: "yesterday", model: models2) ]
-    }
-}
 
 //MARK: - UITableViewDelegate
 extension NotificationsViewController : UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+      if editingStyle == .delete {
+          if indexPath.section == Sections.today.rawValue {
+              if ((vm.notificationModel?.filter({ $0.day == "td" }).first?.model.remove(at: indexPath.row)) != nil) {
+                  self.tableView.deleteRows(at: [indexPath], with: .automatic)
+                  self.tableView.reloadData()
+              }
+          } else if indexPath.section == Sections.yesterday.rawValue {
+              if ((vm.notificationModel?.filter({ $0.day == "yesterday" }).first?.model.remove(at: indexPath.row)) != nil) {
+                  self.tableView.deleteRows(at: [indexPath], with: .automatic)
+                  self.tableView.reloadData()
+              }
+          }
+        
+      }
+    }
+    
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         print(indexPath)
         if indexPath.section == Sections.today.rawValue {
-            if notificationModel?.filter({ $0.day == "td" }).first?.model[indexPath.row].read  == true {
-                notificationModel?.filter({ $0.day == "td" }).first?.model[indexPath.row].read = false
+            if vm.notificationModel?.filter({ $0.day == "td" }).first?.model[indexPath.row].read  == true {
+                vm.notificationModel?.filter({ $0.day == "td" }).first?.model[indexPath.row].read = false
                 self.tableView.reloadData()
             } else {
-                notificationModel?.filter({ $0.day == "td" }).first?.model[indexPath.row].read = true
+                vm.notificationModel?.filter({ $0.day == "td" }).first?.model[indexPath.row].read = true
                 self.tableView.reloadData()
             }
         } else if indexPath.section == Sections.yesterday.rawValue {
-            if notificationModel?.filter({ $0.day == "yesterday" }).first?.model[indexPath.row].read  == true {
-                notificationModel?.filter({ $0.day == "yesterday" }).first?.model[indexPath.row].read = false
+            if vm.notificationModel?.filter({ $0.day == "yesterday" }).first?.model[indexPath.row].read  == true {
+                vm.notificationModel?.filter({ $0.day == "yesterday" }).first?.model[indexPath.row].read = false
                 self.tableView.reloadData()
             } else {
-                notificationModel?.filter({ $0.day == "yesterday" }).first?.model[indexPath.row].read = true
+                vm.notificationModel?.filter({ $0.day == "yesterday" }).first?.model[indexPath.row].read = true
                 self.tableView.reloadData()
             }
         }
@@ -85,10 +94,10 @@ extension NotificationsViewController : UITableViewDataSource {
         case Sections.allOrMessageRequestSegment.rawValue :
             return 1
         case Sections.today.rawValue :
-            let today = notificationModel?.filter { $0.day == "td" }
+            let today = vm.notificationModel?.filter { $0.day == "td" }
             return today?.first?.model.count ?? 0
         case Sections.yesterday.rawValue:
-            let yesterday = notificationModel?.filter { $0.day == "yesterday" }
+            let yesterday = vm.notificationModel?.filter { $0.day == "yesterday" }
             return yesterday?.first?.model.count ?? 0
         default:
             return 0
@@ -100,7 +109,12 @@ extension NotificationsViewController : UITableViewDataSource {
         case Sections.allOrMessageRequestSegment.rawValue :
             return ""
         case Sections.today.rawValue :
-            return "Today"
+            if vm.notificationModel?.filter({ $0.day == "td" }).first?.model.count ?? 0 > 0 {
+                return "Today"
+            } else {
+                return ""
+            }
+            
         case Sections.yesterday.rawValue:
             return "Yesterday"
         default :
@@ -117,7 +131,7 @@ extension NotificationsViewController : UITableViewDataSource {
                 fatalError("cell not found")
             }
             cell.selectionStyle = .none
-            let today = notificationModel?.filter { $0.day == "td" }
+            let today = vm.notificationModel?.filter { $0.day == "td" }
             cell.nameLabel.text = "today"
             cell.nameLabel.text = today?.first?.model[indexPath.row].name
             cell.messageType.text = today?.first?.model[indexPath.row].messageType
@@ -130,7 +144,7 @@ extension NotificationsViewController : UITableViewDataSource {
                 fatalError("cell not found")
             }
             cell.selectionStyle = .none
-            let yesterday = notificationModel?.filter { $0.day == "yesterday" }
+            let yesterday = vm.notificationModel?.filter { $0.day == "yesterday" }
             cell.nameLabel.text = yesterday?.first?.model[indexPath.row].name
             cell.userImageView.image = yesterday?.first?.model[indexPath.row].img
             cell.messageType.text = yesterday?.first?.model[indexPath.row].messageType
@@ -143,13 +157,13 @@ extension NotificationsViewController : UITableViewDataSource {
             }
             cell.selectedSegment =  { [weak self] value in
                 if value == 1 {
-                    guard let notificationModel = self?.notificationModel else { return }
+                    guard let notificationModel = self?.vm.notificationModel else { return }
                     for i in 0..<notificationModel.count  {
                         notificationModel[i].model = notificationModel[i].model.filter { $0.messageType == "message request" }
                     }
                     self?.tableView.reloadData()
                 } else {
-                    self?.appendElemens()
+                    self?.vm.appendElemens()
                     self?.tableView.reloadData()
                 }
             }
@@ -174,9 +188,10 @@ extension NotificationsViewController : UITableViewDataSource {
 extension NotificationsViewController {
     
     @IBAction func readAllButtonTapped(_ sender: Any) {
+        
         if readAllButton.title == "Read All" {
             readAllButton.title = "Unread All"
-            guard let notificationModel = self.notificationModel else { return }
+            guard let notificationModel = self.vm.notificationModel else { return }
             for i in 0..<notificationModel.count  {
                 for j in 0..<notificationModel[i].model.count {
                     if notificationModel[i].model[j].read == false {
@@ -186,15 +201,38 @@ extension NotificationsViewController {
             }
         } else {
             readAllButton.title = "Read All"
-            guard let notificationModel = self.notificationModel else { return }
+            guard let notificationModel = self.vm.notificationModel else { return }
             for i in 0..<notificationModel.count  {
                 for j in 0..<notificationModel[i].model.count {
                     notificationModel[i].model[j].read = false
                 }
             }
         }
+        
+        
         self.tableView.reloadData()
+        
+        
+        
     }
+    
+    
+    @IBAction func timerTapped(_ sender: Any) {
+        
+        if let title = timerButton.title {
+            print(title)
+            if title == "Start" {
+                vm.startTimer {
+                    timerButton.title = "Stop"
+                }
+            } else {
+                timerButton.title = "Start"
+                vm.stopTimer()
+                
+            }
+        }
+    }
+    
     
 }
 

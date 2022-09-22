@@ -32,6 +32,11 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Notifications" id="JAn-19-Amq">
+                        <barButtonItem key="leftBarButtonItem" title="Start" id="9PQ-oQ-RtQ">
+                            <connections>
+                                <action selector="timerTapped:" destination="BYZ-38-t0r" id="pWY-72-VVU"/>
+                            </connections>
+                        </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" title="Read All" id="Y9w-75-rHe">
                             <connections>
                                 <action selector="readAllButtonTapped:" destination="BYZ-38-t0r" id="O1j-Ek-0zG"/>
@@ -41,6 +46,7 @@
                     <connections>
                         <outlet property="readAllButton" destination="Y9w-75-rHe" id="Cpb-1C-eIF"/>
                         <outlet property="tableView" destination="5ne-u9-p8r" id="BBP-Y9-IGJ"/>
+                        <outlet property="timerButton" destination="9PQ-oQ-RtQ" id="SZ8-S0-88i"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
